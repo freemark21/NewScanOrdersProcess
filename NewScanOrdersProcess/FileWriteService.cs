@@ -23,7 +23,7 @@ namespace NewScanOrdersProcess
 
             foreach (ScannedItem scannedItem in scannedItems)
             {
-                _log.LogInformation($"{ scannedItem }");
+                _log.LogInformation($"{scannedItem.PO} {scannedItem.Qty} {scannedItem.Scan}");
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
@@ -9,7 +10,7 @@ namespace NewScanOrdersProcess
     {
         public static string CnnVal (string name)
         {
-            return ConfigurationManager.ConnectionStrings[name].ConnectionString;
+            return "Server=REP-WWW; Database=NewScanOrders; Trusted_Connection=True;";
         }
 
     }

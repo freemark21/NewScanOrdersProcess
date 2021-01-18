@@ -10,10 +10,9 @@ namespace NewScanOrdersProcess
 {
     class Program
     {
-        
         static void Main(string[] args)
         {
-
+            
             var builder = new ConfigurationBuilder();
             BuildConfig(builder);
 
@@ -36,7 +35,7 @@ namespace NewScanOrdersProcess
                 .UseSerilog()
                 .Build();
 
-            var svc = ActivatorUtilities.CreateInstance<IFileWriteService>(host.Services);
+            var svc = ActivatorUtilities.CreateInstance<FileWriteService>(host.Services);
             svc.Run();
         }
 
