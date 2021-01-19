@@ -13,5 +13,10 @@ namespace NewScanOrdersProcess
         public string PO { get; set; }
 
         public string Scan { get; set; }
+
+        public string ReplenexNumber { get; set; }
+
+        public string CustomerInfo { get; set; }
+
     }
 }

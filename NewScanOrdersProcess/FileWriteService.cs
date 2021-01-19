@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 
 namespace NewScanOrdersProcess
@@ -9,6 +10,8 @@ namespace NewScanOrdersProcess
     {
         private readonly ILogger<FileWriteService> _log;
 
+
+        char delimiterChar = '~';
         List<ScannedItem> scannedItems = new List<ScannedItem>();
 
         public FileWriteService(ILogger<FileWriteService> log)
@@ -17,13 +20,19 @@ namespace NewScanOrdersProcess
         }
         public void Run()
         {
-
+            string fileName = DateTime.Now.ToString("yyyyMMddThhmmss");
             DataAccess dataAccess = new DataAccess();
             scannedItems = dataAccess.GetScannedItems();
 
+            using FileStream filestream = new FileStream(@"\\REP-APP\sftp_root\ftpuser\kanban\" + fileName + ".web", FileMode.Create, FileAccess.Write);
+            using StreamWriter streamWriter = new StreamWriter(filestream);
             foreach (ScannedItem scannedItem in scannedItems)
             {
-                _log.LogInformation($"{scannedItem.PO} {scannedItem.Qty} {scannedItem.Scan}");
+                string[] scanSplit = scannedItem.Scan.Split(delimiterChar);
+                scannedItem.ReplenexNumber = scanSplit[0];
+                scannedItem.CustomerInfo = scanSplit[1];
+                streamWriter.WriteLine($"{ scannedItem.ReplenexNumber },{ scannedItem.CustomerInfo },{ scannedItem.Qty },{ scannedItem.PO }");
+
             }
         }
     }
