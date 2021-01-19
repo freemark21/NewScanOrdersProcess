@@ -38,8 +38,7 @@ namespace NewScanOrdersProcess
                     _log.LogError($"Unable to write {scannedItem.OrderID} due to {e}");
                     break;
                 }
-                
-
+                dataAccess.ChangeUpdatedToYes(scannedItem.OrderID);
             }
         }
     }

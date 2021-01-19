@@ -23,7 +23,7 @@ namespace NewScanOrdersProcess
         {
             using (IDbConnection connection = new SqlConnection(DBhelper.CnnVal("newscanorders")))
             {
-
+                connection.Query<ScannedItem>("spnewscanorders_ChangeUpdatedToYes @OrderID", new { OrderID = orderID });
             }
         }
     }
