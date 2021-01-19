@@ -9,9 +9,7 @@ namespace NewScanOrdersProcess
     public class FileWriteService : IFileWriteService
     {
         private readonly ILogger<FileWriteService> _log;
-
-
-        char delimiterChar = '~';
+        readonly char delimiterChar = '~';
         List<ScannedItem> scannedItems = new List<ScannedItem>();
 
         public FileWriteService(ILogger<FileWriteService> log)
@@ -31,7 +29,16 @@ namespace NewScanOrdersProcess
                 string[] scanSplit = scannedItem.Scan.Split(delimiterChar);
                 scannedItem.ReplenexNumber = scanSplit[0];
                 scannedItem.CustomerInfo = scanSplit[1];
-                streamWriter.WriteLine($"{ scannedItem.ReplenexNumber },{ scannedItem.CustomerInfo },{ scannedItem.Qty },{ scannedItem.PO }");
+                try
+                {
+                    streamWriter.WriteLine($"{ scannedItem.ReplenexNumber },{ scannedItem.CustomerInfo },{ scannedItem.Qty },{ scannedItem.PO }");
+                }
+                catch (Exception e)
+                {
+                    _log.LogError($"Unable to write {scannedItem.OrderID} due to {e}");
+                    break;
+                }
+                
 
             }
         }

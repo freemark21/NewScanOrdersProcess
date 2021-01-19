@@ -14,8 +14,16 @@ namespace NewScanOrdersProcess
         {
             using (IDbConnection connection = new SqlConnection(DBhelper.CnnVal("newscanorders")))
             {
-                var output = connection.Query<ScannedItem>("select PO, [Part~CustInfo] Scan, Qty, OrderID from dbo.[newscan~orders] where Updated = 'No'").ToList();
+                var output = connection.Query<ScannedItem>("dbo.spnewscanorders_GetNotUpdated").ToList();
                 return output;
+            }
+        }
+
+        public void ChangeUpdatedToYes(int orderID)
+        {
+            using (IDbConnection connection = new SqlConnection(DBhelper.CnnVal("newscanorders")))
+            {
+
             }
         }
     }
