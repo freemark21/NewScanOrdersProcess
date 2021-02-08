@@ -1,10 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.IO;
-using Serilog;
-using Microsoft.Extensions.Hosting;
-using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Serilog;
+using System.IO;
 
 namespace NewScanOrdersProcess
 {
@@ -12,7 +10,7 @@ namespace NewScanOrdersProcess
     {
         static void Main(string[] args)
         {
-            
+
             var builder = new ConfigurationBuilder();
             BuildConfig(builder);
 
@@ -20,7 +18,7 @@ namespace NewScanOrdersProcess
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
                 .Enrich.FromLogContext()
-                .WriteTo.File(@"C:\Test\log.txt", rollingInterval: RollingInterval.Month)
+                .WriteTo.File(@"\\REP-APP\temp\NewScanOrdersProcess\log.txt", rollingInterval: RollingInterval.Month)
                 .CreateLogger();
 
 
@@ -31,12 +29,15 @@ namespace NewScanOrdersProcess
                 .ConfigureServices((context, services) =>
                 {
                     services.AddTransient<IFileWriteService, FileWriteService>();
+                    services.AddTransient<ISendEmailService, SendEmailService>();
                 })
                 .UseSerilog()
                 .Build();
 
             var svc = ActivatorUtilities.CreateInstance<FileWriteService>(host.Services);
-            svc.Run();
+            var svc2 = ActivatorUtilities.CreateInstance<SendEmailService>(host.Services);
+            //svc.Run();
+            svc2.Run();
         }
 
         static void BuildConfig(IConfigurationBuilder builder)
