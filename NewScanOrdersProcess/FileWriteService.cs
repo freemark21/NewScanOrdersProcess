@@ -37,7 +37,7 @@ namespace NewScanOrdersProcess
                     }
                     catch (Exception e)
                     {
-                        _log.LogError($"Unable to write {scannedItem.OrderID} due to {e}");
+                        _log.LogError($"Unable to write Order ID {scannedItem.OrderID} {Environment.NewLine} {e}");
                         break;
                     }
                     dataAccess.ChangeUpdatedToYes(scannedItem.OrderID);
