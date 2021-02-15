@@ -20,25 +20,30 @@ namespace NewScanOrdersProcess
             string fileName = DateTime.Now.ToString("yyyyMMddThhmmss");
             DataAccess dataAccess = new DataAccess();
             scannedItems = dataAccess.GetScannedItems();
-
-            using FileStream filestream = new FileStream(@"\\REP-APP\sftp_root\ftpuser\kanban\" + fileName + ".web", FileMode.Create, FileAccess.Write);
-            using StreamWriter streamWriter = new StreamWriter(filestream);
-            foreach (ScannedItem scannedItem in scannedItems)
+            if (scannedItems.Count > 0)
             {
-                string[] scanSplit = scannedItem.Scan.Split(delimiterChar);
-                scannedItem.ReplenexNumber = scanSplit[0];
-                scannedItem.CustomerInfo = scanSplit[1];
-                try
+
+                using FileStream filestream = new FileStream(@"\\REP-APP\sftp_root\ftpuser\kanban\" + fileName + ".web", FileMode.Create, FileAccess.Write);
+                using StreamWriter streamWriter = new StreamWriter(filestream);
+                foreach (ScannedItem scannedItem in scannedItems)
                 {
-                    streamWriter.WriteLine($"{ scannedItem.ReplenexNumber },{ scannedItem.CustomerInfo },{ scannedItem.Qty },{ scannedItem.PO }");
+
+                    try
+                    {
+                        string[] scanSplit = scannedItem.Scan.Split(delimiterChar);
+                        scannedItem.ReplenexNumber = scanSplit[0];
+                        scannedItem.CustomerInfo = scanSplit[1];
+                        streamWriter.WriteLine($"{ scannedItem.ReplenexNumber },{ scannedItem.CustomerInfo },{ scannedItem.Qty },{ scannedItem.PO }");
+                    }
+                    catch (Exception e)
+                    {
+                        _log.LogError($"Unable to write {scannedItem.OrderID} due to {e}");
+                        break;
+                    }
+                    dataAccess.ChangeUpdatedToYes(scannedItem.OrderID);
                 }
-                catch (Exception e)
-                {
-                    _log.LogError($"Unable to write {scannedItem.OrderID} due to {e}");
-                    break;
-                }
-                dataAccess.ChangeUpdatedToYes(scannedItem.OrderID);
             }
+
         }
     }
 }
