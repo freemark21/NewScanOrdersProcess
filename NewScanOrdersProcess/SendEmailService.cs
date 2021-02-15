@@ -40,7 +40,7 @@ namespace NewScanOrdersProcess
                 emailingItems = itemsToEmail.FindAll(x => x.CustomerInfo == distinct.CustomerInfo);
                 foreach (ItemToEmail item in emailingItems)
                 {
-                    messageBody += $"{item.CustomerInfo}, {item.ReplenexNumber}, {item.Qty}, /N ";
+                    messageBody += $"{item.CustomerInfo}, {item.ReplenexNumber}, {item.Qty} {Environment.NewLine} ";
 
                 }
                 if (contacts.Count > 0)
@@ -55,24 +55,25 @@ namespace NewScanOrdersProcess
                             Text = $"{messageBody}"
                         };
                     }
-                }
-                try
-                {
-                    using (var client = new SmtpClient())
+                    try
                     {
-                        client.Connect("smtp.office365.com", 587, SecureSocketOptions.StartTls);
-                        client.Authenticate();
-                        client.Send(message);
-                        client.Disconnect(true);
-                        emailSent = true;
-                    }
+                        using (var client = new SmtpClient())
+                        {
+                            client.Connect("smtp.office365.com", 587, SecureSocketOptions.StartTls);
+                            client.Authenticate();
+                            client.Send(message);
+                            client.Disconnect(true);
+                            emailSent = true;
+                        }
 
+                    }
+                    catch (Exception e)
+                    {
+                        _log.LogInformation($"Error sending email for {distinct.CustomerInfo} {e}");
+                        emailSent = false;
+                    }
                 }
-                catch (Exception e)
-                {
-                    _log.LogInformation("Error sending email for {CustomerInfo} {ErrorMsg}", distinct.CustomerInfo, e);
-                    emailSent = false;
-                }
+
             }
 
             foreach (ItemToEmail item in emailingItems)
